@@ -14,15 +14,21 @@ const app = express();
 const server = http.createServer(app);
 
 // Enable CORS for frontend access
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL || "*",
+    credentials: true
+}));
 app.use(express.json());
 
 // Create the Socket.IO server
 const io = new Server(server, {
     cors: {
-        origin: "*", // You can restrict this to your frontend domain in production
-        methods: ["GET", "POST"]
-    }
+        origin: process.env.FRONTEND_URL || "*",
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
+        allowedHeaders: ["Content-Type"]
+    },
+    transports: ["websocket", "polling"]
 });
 
 // MongoDB connection
